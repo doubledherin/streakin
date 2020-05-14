@@ -66,12 +66,15 @@ function keyPressed() {
 }
 
 function triggerSounds() {
+  // This log shows "running" if I've made a code change and saved without refreshing,
+  // but shows "suspended" if I refresh -- even if I move the mouse.
+  console.log("AUDIO CONTEXT STATE: ", getAudioContext().state)
   if (!mouseMoved) {
+    getAudioContext().resume()
     funk.play()
     crowdCheer.setVolume(0.3)
     crowdCheer.loop(gameStartDelayTimeInSeconds)      
   }
-  console.log("AUDIO CONTEXT STATE: ", getAudioContext().state)
   mouseMoved = true
 }
 
