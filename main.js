@@ -1,19 +1,19 @@
 let framesPerSecond = 60
-let gameStartDelayTimeInSeconds = 8
+let gameStartDelayTimeInSeconds = 0 //8
 let copDelayTimeInSeconds = 15
 let funk
 let crowdCheer
 let mouseMoved = false
 
 function preload() {
-  loadSounds()
+  // loadSounds()
 }
 
 function setup() {
-  var cnv = createCanvas(900, 800)
-  cnv.mouseMoved(triggerSounds)
-  loadImages();
-  mascot = new Mascot(100, 200)
+  var cnv = createCanvas(windowWidth, windowHeight)
+  // cnv.mouseMoved(triggerSounds)
+  loadImages()
+  mascot = new Mascot(width/2, height/2)
   butt = new Butt(width - 50, height - 50)
   cop = new Cop(0, height-200)
 }
@@ -22,8 +22,9 @@ function draw() {
   if (!gameHasStarted()) {
     showInstructions()
   } else {
-    funk.stop();
-    drawField();
+    // funk.stop()
+    image(crowdImage, 0, 0, width, height/6);
+    drawField()
     mascot.display()
     mascot.update(butt.position)
     mascot.edges()
@@ -33,9 +34,9 @@ function draw() {
   }
   if (mascot.isFleeing) {
     streakinText()
-    crowdCheer.setVolume(1)
+    // crowdCheer.setVolume(1)
   } else {
-    crowdCheer.setVolume(0.3)
+    // crowdCheer.setVolume(0.3)
   }
   if (shouldShowCop()) {
     cop.display(butt.position)
@@ -43,8 +44,6 @@ function draw() {
     cop.edges()
   }
 }
-
-function toggleSoundAndStreakinText() {}
 
 function keyPressed() {
   switch (keyCode) {
@@ -66,9 +65,6 @@ function keyPressed() {
 }
 
 function triggerSounds() {
-  // This log shows "running" if I've made a code change and saved without refreshing,
-  // but shows "suspended" if I refresh -- even if I move the mouse.
-  console.log("AUDIO CONTEXT STATE: ", getAudioContext().state)
   if (!mouseMoved) {
     getAudioContext().resume()
     funk.play()
@@ -139,22 +135,32 @@ function streakinText() {
 }
 
 function drawField() {
-  background(76, 187, 23);
-  image(crowdImage, 0, 0);
-  beginShape();
-  noFill();
-  stroke(255);
-  strokeWeight(4);
-  vertex(width / 2, height - 600);
-  vertex(width - 50, height - 350);
-  vertex(width / 2, height - 50);
-  vertex(width - 850, height - 350);
-  endShape(CLOSE);
+
+  // field
   push()
-  fill(255);
-  rect(440, 195, 20, 20);
-  rect(835, 440, 20, 20);
-  rect(440, 730, 20, 20);
-  rect(45, 440, 20, 20);
+    fill(76, 187, 23) // green
+    noStroke()
+    rect(0, height/6, width, height - height/6)
+  pop()
+
+  // baseball diamond
+  beginShape()
+    noFill()
+    stroke(255)
+    strokeWeight(4)
+    vertex(width / 2, height/5)
+    vertex(width/1.05, height/2)
+    vertex(width / 2, height/1.05)
+    vertex(width/16, height/2)
+  endShape(CLOSE)
+  
+  // bases
+  push()
+    rectMode(CENTER)
+    fill(255)
+    rect(width / 2, height/5, 20, 20)
+    rect(width/1.05, height/2, 20, 20)
+    rect(width / 2, height/1.05, 20, 20)
+    rect(width/16, height/2, 20, 20)
   pop()
 }
