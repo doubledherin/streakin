@@ -43,6 +43,7 @@ function draw() {
     cop.update()
     cop.edges()
   }
+  streakinText()
 }
 
 function keyPressed() {
@@ -99,9 +100,8 @@ function shouldShowCop() {
 
 function showInstructions() {
   fill(250, 243, 220);
-  rect(0, 0, width, height);
-  streakinText();
-  instructionsText();
+  rect(0, 0, width, height)
+  instructionsText()
 }
 
 function instructionsText() {
@@ -121,15 +121,14 @@ function instructionsText() {
 
 function streakinText() {
   push()
-  textFont("Monoton");
-  stroke(245, 107, 8);
-  fill(255, 219, 88);
-  textSize(50);
-  textStyle(ITALIC);
-  textAlign(CENTER, CENTER);
-
+  textFont("Monoton")
+  stroke(245, 107, 8)
+  fill(255, 219, 88)
+  textSize(50)
+  textStyle(ITALIC)
+  textAlign(CENTER, CENTER)
   if (frameCount % 40 < 15) {
-    text("Streakin'!", 0, 70, width);
+    text("Streakin'!", 0, height/12, width);
   }
   pop()
 }
