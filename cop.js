@@ -7,14 +7,24 @@ function Cop(x, y) {
     this.acceleration.add(force);
   }
 
-  this.update = function() {
-    this.velocity.add(this.acceleration);
-    this.position.add(this.velocity);
-    this.acceleration.set(0, 0);
+  this.update = function(buttPosition) {
+    this.velocity.add(this.acceleration)
+    this.position.add(this.velocity)
+    this.acceleration.set(0, 0)
+    var chase = this.chase(buttPosition)
+    this.applyForce(chase)
   }
 
   this.display = function() {
     image(copImage, this.position.x, this.position.y)
+  }
+
+  this.chase = function(target) {
+    var desired = p5.Vector.sub(target, this.position)
+    desired.setMag(this.maxSpeed)
+    var steer = p5.Vector.sub(desired, this.velocity)
+    steer.limit(this.maxForce)
+    return steer
   }
 
   this.edges = function() {

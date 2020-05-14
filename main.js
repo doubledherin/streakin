@@ -39,8 +39,8 @@ function draw() {
     // crowdCheer.setVolume(0.3)
   }
   if (shouldShowCop()) {
-    cop.display(butt.position)
-    cop.update()
+    cop.display()
+    cop.update(butt.position)
     cop.edges()
   }
   streakinText()
