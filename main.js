@@ -1,55 +1,62 @@
-let framesPerSecond = 60
-let gameStartDelayTimeInSeconds = 0//8
-let copDelayTimeInSeconds = 15
-let framesToWaitBeforeAddingCop = framesPerSecond * copDelayTimeInSeconds
-let funk
-let mouseMoved = false // wtf do i have to do this?
-let crowdCheer
+// constants
+const copDelayTimeInSeconds = 15
+const newCopDelay = 60 * copDelayTimeInSeconds
+const INSTRUCTIONS = "INSTRUCTIONS"
+const PLAYING = "PLAYING"
+const GAME_OVER = "GAME_OVER"
+
+// initial state
+let state = INSTRUCTIONS
+let score = 0
 let cops = []
-let topOfField
-let score
-let gameOver
 
 function preload() {
   loadSounds()
 }
 
 function setup() {
-  var cnv = createCanvas(windowWidth, windowHeight)
-  topOfField = height/6
-  cnv.mouseMoved(triggerSounds)
   loadImages()
-  mascot = new Mascot(width/2, height/2)
-  butt = new Butt(width - 50, height - 50)
-  score = 0
-  gameOver = false
+  createCanvas(windowWidth, windowHeight)
+  let mascotPosition = createVector(width/2, height/2)
+  let buttPosition = createVector(width-50, height-50)
+  mascot = new Mascot(mascotPosition.x, mascotPosition.y)
+  butt = new Butt(buttPosition.x, buttPosition.y)
+  topOfField = windowHeight/6
 }
 
 function draw() {
-  if (!gameHasStarted()) {
-    showInstructions()
-  } else if (gameOver) {
-    showGameOver()
-  } else if (!gameOver) {
-    handleTackle()
-    handleArrest()
-    funk.stop()
-    addCop()
-    drawField()
-    image(crowdImage, 0, 0, width, topOfField)
-    drawScoreBoard(score)
-    mascot.display()
-    mascot.update(butt.position)
-    mascot.edges()
-    butt.display()
-    butt.update()
-    butt.edges()
+  handleSounds()
+  handleInstructions()
+  switch (state) {
+    case INSTRUCTIONS:
+      showInstructions()
+      break
+    case PLAYING:
+      handleTackle()
+      handleArrest()
+      addCop()
+      drawField()
+      image(crowdImage, 0, 0, width, topOfField)
+      drawScoreBoard(score)
+      mascot.display()
+      mascot.update(butt.position)
+      mascot.edges()
+      butt.display()
+      butt.update()
+      butt.edges()
+      cops.forEach(cop => {
+        cop.display()
+        cop.update(butt.position)
+        cop.edges()
+      })
+      break
+    case GAME_OVER:
+      showGameOver()
+      break
+    default:
+      showInstructions()
+      break
   }
-  cops.forEach(cop => {
-    cop.display()
-    cop.update(butt.position)
-    cop.edges()
-  })
   streakinText()
 }
 
@@ -57,7 +64,7 @@ function handleArrest() {
   cops.forEach(cop => {
     let distanceBetweenCopAndButt = p5.Vector.sub(cop.position, butt.position)
     if (distanceBetweenCopAndButt.mag() < 25) {
-      gameOver = true
+      state = GAME_OVER
       cops = []
     }
   })
@@ -90,7 +97,7 @@ function handleTackle() {
 }
 
 function addCop() {
-  if (frameCount % framesToWaitBeforeAddingCop === 0) {
+  if (frameCount % newCopDelay === 0) {
     cops.push(new Cop(random([0, width]), random(topOfField, height)))
     if (cops.length === 1) {
       copWhistle.loop()
@@ -114,20 +121,29 @@ function keyPressed() {
     case DOWN_ARROW:
       butt.velocity = createVector(0, 3)
       break
+    case 66: // 'b' or 'B'
+      state = PLAYING
+      break
     case 80: // 'p' or 'P'
       console.log("PLAY AGAIN")
+      break
   }
 }
 
-function triggerSounds() {
-  if (!mouseMoved) {
-
-    getAudioContext().resume()
-    funk.play()
-    crowdCheer.setVolume(0.3)
-    crowdCheer.loop(gameStartDelayTimeInSeconds)      
+function handleSounds() {
+  switch (state) {
+    case INSTRUCTIONS:
+    case GAME_OVER:
+      !funk.isPlaying() && funk.loop()
+      crowdCheer.stop()
+      copWhistle.stop()
+      break
+    case PLAYING: 
+      !crowdCheer.isPlaying() && crowdCheer.loop()
+      cops.length > 0 && !copWhistle.isPlaying() && copWhistle.loop()
+      funk.stop()
+      break    
   }
-  mouseMoved = true
 }
 
 function loadSounds() {
@@ -146,14 +162,9 @@ function loadImages() {
   crowdImage = loadImage('./assets/crowd.jpg')
 }
 
-function gameHasStarted() {
-  return frameCount > (framesPerSecond * gameStartDelayTimeInSeconds)
-}
-  
-function shouldShowCop() {
-  return frameCount > (framesPerSecond * copDelayTimeInSeconds)
-}
 
+function handleInstructions() {
+}
 function showInstructions() {
   fill(250, 243, 220)
   rect(0, 0, width, height)
@@ -207,6 +218,7 @@ function instructionsText() {
   text("Use the arrow keys to move!", 0, height/4 + 200, width)
   text("Try to tackle the mascot!", 0, height/4 + 300, width)
   text("Don't get caught by the fuzz!", 0, height/4 + 400, width)
+  text("Press 'b' to begin!", 0, height/4 + 500, width)
   pop()
 }
 
@@ -219,7 +231,7 @@ function streakinText() {
   textStyle(ITALIC)
   textAlign(CENTER, CENTER)
   if (frameCount % 40 < 15) {
-    text("Streakin'!", 0, height/12, width)
+    text("Streakin'", 0, height/12, width)
   }
   pop()
 }
