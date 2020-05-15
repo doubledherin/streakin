@@ -114,6 +114,8 @@ function keyPressed() {
     case DOWN_ARROW:
       butt.velocity = createVector(0, 3)
       break
+    case 80: // 'p' or 'P'
+      console.log("PLAY AGAIN")
   }
 }
 
@@ -189,8 +191,10 @@ function gameOverText() {
   } else {
     text(`You didn't beat the high score of ${highScore}`, 0, height/4 + 400, width)
   }
+  text("Press 'P' to play again!", width/2, height/5 +600)
   pop()
 }
+
 
 function instructionsText() {
   push()
