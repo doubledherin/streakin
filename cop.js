@@ -20,9 +20,6 @@ function Cop(x, y) {
     image(copImage, this.position.x, this.position.y)
   }
 
-  this.mouseClicked = function() {
-    console.log("CLICKED ON COP")
-  }
 
   this.chase = function(target) {
     var desired = p5.Vector.sub(target, this.position)
