@@ -80,3 +80,4 @@ function Mascot(x, y) {
     }
   }
 }
+

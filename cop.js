@@ -1,7 +1,8 @@
 function Cop(x, y) {
-  this.position = createVector(x, y);
-  this.velocity = createVector(0, 0);
-  this.acceleration = createVector(0, 0);
+  this.position = createVector(x, y)
+  this.velocity = createVector(0, 0)
+  this.acceleration = createVector(0, 0)
+  this.maxSpeed = 1
 
   this.applyForce = function(force) {
     this.acceleration.add(force);

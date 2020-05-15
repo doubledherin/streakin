@@ -1,30 +1,43 @@
 let framesPerSecond = 60
-let gameStartDelayTimeInSeconds = 0 //8
+let gameStartDelayTimeInSeconds = 0//8
 let copDelayTimeInSeconds = 15
+let framesToWaitBeforeAddingCop = framesPerSecond * copDelayTimeInSeconds
 let funk
+let mouseMoved = false // wtf do i have to do this?
 let crowdCheer
-let mouseMoved = false
+let cops = []
+let topOfField
+let score
+let gameOver
 
 function preload() {
-  // loadSounds()
+  loadSounds()
 }
 
 function setup() {
   var cnv = createCanvas(windowWidth, windowHeight)
-  // cnv.mouseMoved(triggerSounds)
+  topOfField = height/6
+  cnv.mouseMoved(triggerSounds)
   loadImages()
   mascot = new Mascot(width/2, height/2)
   butt = new Butt(width - 50, height - 50)
-  cop = new Cop(0, height-200)
+  score = 0
+  gameOver = false
 }
 
 function draw() {
   if (!gameHasStarted()) {
     showInstructions()
-  } else {
-    // funk.stop()
-    image(crowdImage, 0, 0, width, height/6);
+  } else if (gameOver) {
+    showGameOver()
+  } else if (!gameOver) {
+    handleTackle()
+    handleArrest()
+    funk.stop()
+    addCop()
     drawField()
+    image(crowdImage, 0, 0, width, topOfField)
+    drawScoreBoard(score)
     mascot.display()
     mascot.update(butt.position)
     mascot.edges()
@@ -32,18 +45,57 @@ function draw() {
     butt.update()
     butt.edges()
   }
-  if (mascot.isFleeing) {
-    streakinText()
-    // crowdCheer.setVolume(1)
-  } else {
-    // crowdCheer.setVolume(0.3)
-  }
-  if (shouldShowCop()) {
+  cops.forEach(cop => {
     cop.display()
     cop.update(butt.position)
     cop.edges()
-  }
+  })
   streakinText()
+}
+
+function handleArrest() {
+  cops.forEach(cop => {
+    let distanceBetweenCopAndButt = p5.Vector.sub(cop.position, butt.position)
+    if (distanceBetweenCopAndButt.mag() < 25) {
+      gameOver = true
+      cops = []
+    }
+  })
+}
+
+function drawScoreBoard(score) {
+  push()
+    fill(201)
+    stroke(0)
+    rect(width-350, 20, 300, 100, 25, 25, 25, 25)
+  pop()
+  push()
+    textFont("VT323")
+    textSize(45)
+    textStyle(NORMAL)
+    scoreText = `Score: ${score}`
+    stroke(0)
+    fill(0)
+    strokeWeight(2)
+    text(scoreText, width-330, 40, width)
+  pop()
+}
+
+function handleTackle() {
+  let distanceBetweenButtAndMascot = p5.Vector.sub(mascot.position, butt.position)
+  if (distanceBetweenButtAndMascot.mag() < 25) {
+    score += 100
+    cowBell.play()
+  }
+}
+
+function addCop() {
+  if (frameCount % framesToWaitBeforeAddingCop === 0) {
+    cops.push(new Cop(random([0, width]), random(topOfField, height)))
+    if (cops.length === 1) {
+      copWhistle.loop()
+    }
+  }
 }
 
 function keyPressed() {
@@ -67,6 +119,7 @@ function keyPressed() {
 
 function triggerSounds() {
   if (!mouseMoved) {
+
     getAudioContext().resume()
     funk.play()
     crowdCheer.setVolume(0.3)
@@ -76,18 +129,19 @@ function triggerSounds() {
 }
 
 function loadSounds() {
-  crowdCheer = loadSound('./assets/crowdCheersTrimmed.mp3');
-  funk = loadSound('./assets/funk.mp3');
-  copWhistle = loadSound('./assets/cop-whistle.mp3');
+  crowdCheer = loadSound('./assets/crowdCheersTrimmed.mp3')
+  funk = loadSound('./assets/funk.mp3')
+  copWhistle = loadSound('./assets/cop-whistle.mp3')
+  cowBell = loadSound('./assets/cowbell.mp3')
 }
 
 function loadImages() {
-  leftButtImage = loadImage('./assets/left-butt.png');
-  rightButtImage = loadImage('./assets/right-butt.png');
-  copImage = loadImage('./assets/cop.png');
-  leftMascotImage = loadImage('./assets/left-mascot.png');
-  rightMascotImage = loadImage('./assets/right-mascot.png');
-  crowdImage = loadImage('./assets/crowd.jpg');
+  leftButtImage = loadImage('./assets/left-butt.png')
+  rightButtImage = loadImage('./assets/right-butt.png')
+  copImage = loadImage('./assets/cop.png')
+  leftMascotImage = loadImage('./assets/left-mascot.png')
+  rightMascotImage = loadImage('./assets/right-mascot.png')
+  crowdImage = loadImage('./assets/crowd.jpg')
 }
 
 function gameHasStarted() {
@@ -99,23 +153,56 @@ function shouldShowCop() {
 }
 
 function showInstructions() {
-  fill(250, 243, 220);
+  fill(250, 243, 220)
   rect(0, 0, width, height)
   instructionsText()
+}
+function showGameOver() {
+  fill(250, 243, 220)
+  rect(0, 0, width, height)
+  gameOverText()
+  if (!funk.isPlaying()) {
+    funk.loop()
+  }
+  copWhistle.stop()
+  crowdCheer.stop()
+}
+
+function gameOverText() {
+  push()
+  textFont("VT323")
+  stroke(0)
+  fill(0)
+  strokeWeight(2)
+  textSize(45)
+  textAlign(CENTER, CENTER)
+  text("Ouch!", 0, height/4, width)
+  text("Creamed by the fuzz!", 0, height/4 + 200, width)
+  text(`Score: ${score}`, 0, height/4 + 300, width)
+  
+  var highScore = getItem('streakinHighScore')
+  if (score >= highScore) {
+    text(`You got the highest score!`, 0, height/4 + 400, width)
+    if (score > highScore) {
+      storeItem('streakinHighScore', score)
+    }
+  } else {
+    text(`You didn't beat the high score of ${highScore}`, 0, height/4 + 400, width)
+  }
+  pop()
 }
 
 function instructionsText() {
   push()
-  textFont("VT323");
-  stroke(0);
-  fill(0);
-  textSize(40);
-  textAlign(CENTER, CENTER);
-  text("HOW TO PLAY", 0, 150, width);
-  text("Use the arrow keys to move!", 0, 250, width);
-  text("Try to tackle the mascot!", 0, 350, width);
-  text("Don't get caught by the fuzz!", 0, 450, width);
-  text("To begin, click the screen!", 0, 550, width);
+  textFont("VT323")
+  stroke(0)
+  fill(0)
+  textSize(45)
+  textAlign(CENTER, CENTER)
+  text("HOW TO PLAY", 0, height/4, width)
+  text("Use the arrow keys to move!", 0, height/4 + 200, width)
+  text("Try to tackle the mascot!", 0, height/4 + 300, width)
+  text("Don't get caught by the fuzz!", 0, height/4 + 400, width)
   pop()
 }
 
@@ -128,7 +215,7 @@ function streakinText() {
   textStyle(ITALIC)
   textAlign(CENTER, CENTER)
   if (frameCount % 40 < 15) {
-    text("Streakin'!", 0, height/12, width);
+    text("Streakin'!", 0, height/12, width)
   }
   pop()
 }
@@ -139,7 +226,7 @@ function drawField() {
   push()
     fill(76, 187, 23) // green
     noStroke()
-    rect(0, height/6, width, height - height/6)
+    rect(0, topOfField, width, height - topOfField)
   pop()
 
   // baseball diamond
