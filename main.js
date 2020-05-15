@@ -9,6 +9,8 @@ const GAME_OVER = "GAME_OVER"
 let state = INSTRUCTIONS
 let score = 0
 let cops = []
+let buttStartPosition
+let mascotStartPosition
 
 function preload() {
   loadSounds()
@@ -17,38 +19,28 @@ function preload() {
 function setup() {
   loadImages()
   createCanvas(windowWidth, windowHeight)
-  let mascotPosition = createVector(width/2, height/2)
-  let buttPosition = createVector(width-50, height-50)
-  mascot = new Mascot(mascotPosition.x, mascotPosition.y)
-  butt = new Butt(buttPosition.x, buttPosition.y)
+  mascotStartPosition = createVector(width/2, height/2)
+  buttStartPosition = createVector(width-50, height-50)
+  mascot = new Mascot(mascotStartPosition.x, mascotStartPosition.y)
+  butt = new Butt(buttStartPosition.x, buttStartPosition.y)
   topOfField = windowHeight/6
 }
 
 function draw() {
   handleSounds()
-  handleInstructions()
   switch (state) {
     case INSTRUCTIONS:
       showInstructions()
       break
     case PLAYING:
-      handleTackle()
-      handleArrest()
-      addCop()
       drawField()
-      image(crowdImage, 0, 0, width, topOfField)
+      drawCrowd()
       drawScoreBoard(score)
-      mascot.display()
-      mascot.update(butt.position)
-      mascot.edges()
-      butt.display()
-      butt.update()
-      butt.edges()
-      cops.forEach(cop => {
-        cop.display()
-        cop.update(butt.position)
-        cop.edges()
-      })
+      drawMascot(butt)
+      drawButt()
+      drawCops()
+      handleTackles()
+      handleArrest()
       break
     case GAME_OVER:
       showGameOver()
@@ -58,6 +50,26 @@ function draw() {
       break
   }
   streakinText()
+}
+function drawMascot(butt) {
+  mascot.display()
+  mascot.update(butt.position)
+  mascot.edges()
+}
+
+function drawButt() {
+  butt.display()
+  butt.update()
+  butt.edges()
+}
+
+function drawCops() {
+  addCop()
+  cops.forEach(cop => {
+    cop.display()
+    cop.update(butt.position)
+    cop.edges()
+  })
 }
 
 function handleArrest() {
@@ -88,7 +100,7 @@ function drawScoreBoard(score) {
   pop()
 }
 
-function handleTackle() {
+function handleTackles() {
   let distanceBetweenButtAndMascot = p5.Vector.sub(mascot.position, butt.position)
   if (distanceBetweenButtAndMascot.mag() < 25) {
     score += 100
@@ -125,7 +137,15 @@ function keyPressed() {
       state = PLAYING
       break
     case 80: // 'p' or 'P'
-      console.log("PLAY AGAIN")
+      if (state == GAME_OVER) {
+        score = 0
+        cops = []
+        butt.position = buttStartPosition
+        butt.velocity = createVector(0,0)
+        mascot.position = mascotStartPosition
+        mascot.velocity = createVector(0,0)
+        state = PLAYING
+      }
       break
   }
 }
@@ -162,9 +182,6 @@ function loadImages() {
   crowdImage = loadImage('./assets/crowd.jpg')
 }
 
-
-function handleInstructions() {
-}
 function showInstructions() {
   fill(250, 243, 220)
   rect(0, 0, width, height)
@@ -265,4 +282,8 @@ function drawField() {
     rect(width / 2, height/1.05, 20, 20)
     rect(width/16, height/2, 20, 20)
   pop()
+}
+
+function drawCrowd() {
+  image(crowdImage, 0, 0, width, topOfField)
 }
