@@ -26,6 +26,14 @@ function setup() {
   topOfField = windowHeight/6
 }
 
+function mouseMoved() {
+  if (state === INSTRUCTIONS && !funk.isPlaying()) {
+    console.log("LLL")
+    loadSounds()
+    // funk.loop()
+  }
+}
+
 function draw() {
   handleSounds()
   switch (state) {
