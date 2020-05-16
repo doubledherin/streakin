@@ -8,7 +8,7 @@ function Butt(x, y) {
   this.update = function() {
     this.velocity.add(this.acceleration)
     this.position.add(this.velocity)
-    this.acceleration.set(0, 0);
+    this.acceleration.set(0, 0)
   }
   
   this.applyForce = function(force) {

@@ -5,7 +5,7 @@ function Cop(x, y) {
   this.maxSpeed = 1
 
   this.applyForce = function(force) {
-    this.acceleration.add(force);
+    this.acceleration.add(force)
   }
 
   this.update = function(buttPosition, cops) {
@@ -36,23 +36,23 @@ function Cop(x, y) {
         diff.normalize()
         diff.div(d)        // Weight by distance
         steer.add(diff)
-        count++;           // Keep track of how many
+        count++           // Keep track of how many
       }
     }
     // Average -- divide by how many
     if (count > 0) {
-      steer.div(count);
+      steer.div(count)
     }
   
     // As long as the vector is greater than 0
     if (steer.mag() > 0) {
       // Implement Reynolds: Steering = Desired - Velocity
-      steer.normalize();
-      steer.mult(this.maxspeed);
-      steer.sub(this.velocity);
-      steer.limit(this.maxforce);
+      steer.normalize()
+      steer.mult(this.maxspeed)
+      steer.sub(this.velocity)
+      steer.limit(this.maxforce)
     }
-    return steer;
+    return steer
   }
 
 
@@ -66,23 +66,23 @@ function Cop(x, y) {
 
   this.edges = function() {
     if (this.position.y > height - 20) {
-      this.velocity.y *= -1;
-      this.position.y = height - 20;
+      this.velocity.y *= -1
+      this.position.y = height - 20
     }
 
     if (this.position.x > width - 20) {
-      this.velocity.x *= -1;
-      this.position.x = width - 20;
+      this.velocity.x *= -1
+      this.position.x = width - 20
     }
 
     if (this.position.x < 5) {
-      this.velocity.x *= -1;
-      this.position.x = 5;
+      this.velocity.x *= -1
+      this.position.x = 5
     }
 
     if (this.position.y < 150) {
-      this.velocity.y *= -1;
-      this.position.y = 150;
+      this.velocity.y *= -1
+      this.position.y = 150
     }
   }
 }
