@@ -23,7 +23,6 @@ class Boid {
     this.acceleration.add(force)
   }
 
-  // TODO: Try this with constrain
   edges(xMin=5, xMax=width-20, yMin=150, yMax=height-40) {
     if (this.position.x < xMin) {
       this.position.x = xMin
