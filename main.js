@@ -25,13 +25,9 @@ function setup() {
   butt = new Butt(buttStartPosition.x, buttStartPosition.y)
   topOfField = windowHeight/6
 }
-
-function mouseMoved() {
-  if (state === INSTRUCTIONS && !funk.isPlaying()) {
-    console.log("LLL")
-    loadSounds()
-    // funk.loop()
-  }
+function mousePressed() {
+  console.log("MOUSE PRESSED")
+  userStartAudio()
 }
 
 function draw() {
