@@ -1,29 +1,30 @@
-function Butt(x, y) {
-  this.position = createVector(x, y)
-  this.velocity = createVector(0, 0)
-  this.acceleration = createVector(0, 0)
+class Butt {
+  constructor(x, y) {
+    this.position = createVector(x, y)
+    this.velocity = createVector(0, 0)
+    this.acceleration = createVector(0, 0)  
+    this.direction = "left"
+  }
 
-  this.direction = "left"
-  
-  this.update = function() {
+  update() {
     this.velocity.add(this.acceleration)
     this.position.add(this.velocity)
     this.acceleration.set(0, 0)
   }
-  
-  this.applyForce = function(force) {
+
+  applyForce(force) {
     this.acceleration.add(force)
   }
-  
-  this.display = function() {
+
+  display() {
     if (this.direction === "left") {
       image(leftButtImage, this.position.x, this.position.y)      
     } else {
       image(rightButtImage, this.position.x, this.position.y)
     }
   }
-
-  this.edges = function() {
+  
+  edges() {
     if (this.position.y > height - 20) {
       this.position.y = height - 20
     }

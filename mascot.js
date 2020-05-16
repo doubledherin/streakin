@@ -1,13 +1,15 @@
-function Mascot(x, y) {
-  this.isFleeing = false
-  this.maxSpeed = 5
-  this.maxForce = 5
-  this.position = createVector(x, y)
-  this.velocity = createVector(0, 0)
-  this.acceleration = createVector(0, 0)
-  this.center = createVector(width/2, height/2)
-  
-  this.update = function(buttPosition) {
+class Mascot {
+  constructor(x, y) {
+    this.isFleeing = false
+    this.maxSpeed = 5
+    this.maxForce = 5
+    this.position = createVector(x, y)
+    this.velocity = createVector(0, 0)
+    this.acceleration = createVector(0, 0)
+    this.center = createVector(width/2, height/2)  
+  }
+
+  update(buttPosition) {
     this.velocity.add(this.acceleration)
     constrain(this.velocity.mag, 0, this.maxSpeed)
     this.position.add(this.velocity)
@@ -17,24 +19,24 @@ function Mascot(x, y) {
     var gravitateTowardCenter = this.gravitateTowardCenter()
     this.applyForce(gravitateTowardCenter)
   }
-  
-  this.applyForce = function(force) {
+
+  applyForce(force) {
     this.acceleration.add(force)
   }
-
-  this.display = function() {
+  
+  display() {
     this.flip()
   }
-  
-  this.flip = function() {
+
+  flip() {
     if (frameCount % 60 < 30) {
       image(leftMascotImage, this.position.x, this.position.y)
     } else {
       image(rightMascotImage, this.position.x, this.position.y)
     }
   }
-
-  this.gravitateTowardCenter = function() {
+  
+  gravitateTowardCenter() {
     var desired = p5.Vector.sub(this.center, this.position)
     desired.setMag(1.5)
     var steer = p5.Vector.sub(desired, this.velocity)
@@ -42,7 +44,7 @@ function Mascot(x, y) {
     return steer
   }
 
-  this.flee = function(target) {
+  flee(target) {
     var desired = p5.Vector.sub(target, this.position)
     var d = desired.mag()
     if (d < 300) {
@@ -56,9 +58,9 @@ function Mascot(x, y) {
       this.isFleeing = false
       return createVector(0, 0)
     }
-}
+  }
 
-  this.edges = function() {
+  edges() {
     if (this.position.y > height - 20) {
       this.velocity.y *= -1
       this.position.y = height - 20
@@ -80,4 +82,3 @@ function Mascot(x, y) {
     }
   }
 }
-

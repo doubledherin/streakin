@@ -1,14 +1,16 @@
-function Cop(x, y) {
-  this.position = createVector(x, y)
-  this.velocity = createVector(0, 0)
-  this.acceleration = createVector(0, 0)
-  this.maxSpeed = 1
+class Cop {
+  constructor(x, y) {
+    this.position = createVector(x, y)
+    this.velocity = createVector(0, 0)
+    this.acceleration = createVector(0, 0)
+    this.maxSpeed = 1  
+  }
 
-  this.applyForce = function(force) {
+  applyForce(force) {
     this.acceleration.add(force)
   }
 
-  this.update = function(buttPosition, cops) {
+  update(buttPosition, cops) {
     this.velocity.add(this.acceleration)
     this.position.add(this.velocity)
     this.acceleration.set(0, 0)
@@ -18,11 +20,11 @@ function Cop(x, y) {
     this.applyForce(separate)
   }
 
-  this.display = function() {
+  display() {
     image(copImage, this.position.x, this.position.y)
   }
 
-  this.separate = function(cops) {
+  separate(cops) {
     let desiredseparation = 50
     let steer = createVector(0, 0)
     let count = 0
@@ -55,16 +57,17 @@ function Cop(x, y) {
     return steer
   }
 
-
-  this.chase = function(target) {
-    var desired = p5.Vector.sub(target, this.position)
-    desired.setMag(this.maxSpeed)
-    var steer = p5.Vector.sub(desired, this.velocity)
-    steer.limit(this.maxForce)
-    return steer
+  chase(target) {
+    this.chase = function(target) {
+      var desired = p5.Vector.sub(target, this.position)
+      desired.setMag(this.maxSpeed)
+      var steer = p5.Vector.sub(desired, this.velocity)
+      steer.limit(this.maxForce)
+      return steer  
+    }
   }
 
-  this.edges = function() {
+  edges() {
     if (this.position.y > height - 20) {
       this.velocity.y *= -1
       this.position.y = height - 20

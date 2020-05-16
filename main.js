@@ -27,7 +27,6 @@ function setup() {
   topOfField = windowHeight/6
 }
 function mousePressed() {
-  console.log("PRESSED")
   userStartAudio()
   if (state === CLICK_TO_BEGIN) {
     state = INSTRUCTIONS
