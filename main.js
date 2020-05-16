@@ -11,6 +11,7 @@ let state = CLICK_TO_BEGIN
 let score = 0
 let cops = []
 let buttStartPosition
+let buttDirection
 let mascotStartPosition
 
 function preload() {
@@ -22,10 +23,12 @@ function setup() {
   createCanvas(windowWidth, windowHeight)
   mascotStartPosition = createVector(width/2, height/2)
   buttStartPosition = createVector(width-50, height-50)
-  mascot = new Mascot(mascotStartPosition.x, mascotStartPosition.y)
-  butt = new Butt(buttStartPosition.x, buttStartPosition.y)
+  buttDirection = "left"
+  mascot = new Boid(mascotStartPosition.x, mascotStartPosition.y, 5, 5)
+  butt = new Boid(buttStartPosition.x, buttStartPosition.y)
   topOfField = windowHeight/6
 }
+
 function mousePressed() {
   userStartAudio()
   if (state === CLICK_TO_BEGIN) {
@@ -46,7 +49,7 @@ function draw() {
       drawField()
       drawCrowd()
       drawScoreBoard(score)
-      drawMascot(butt)
+      drawMascot()
       drawButt()
       drawCops()
       handleTackles()
@@ -61,14 +64,20 @@ function draw() {
   }
   streakinText()
 }
-function drawMascot(butt) {
-  mascot.display()
+function drawMascot() {
+  const imageRef = (frameCount % 60 < 30) ? leftMascotImage : rightMascotImage
+  mascot.display(imageRef, mascot.position)
   mascot.update(butt.position)
+  const flee = mascot.flee(butt.position)
+  mascot.applyForce(flee)
+  const gravitateTowardCenter = mascot.gravitateTowardCenter()
+  mascot.applyForce(gravitateTowardCenter)
   mascot.edges()
 }
 
 function drawButt() {
-  butt.display()
+  const imageRef = buttDirection === "left" ? leftButtImage : rightButtImage
+  butt.display(imageRef, butt.position)
   butt.update()
   butt.edges()
 }
@@ -76,8 +85,12 @@ function drawButt() {
 function drawCops() {
   addCop()
   cops.forEach(cop => {
-    cop.display()
+    cop.display(copImage, cop.position)
     cop.update(butt.position, cops)
+    const chase = cop.chase(butt.position)
+    cop.applyForce(chase)
+    const separate = cop.separate(50, cops)
+    cop.applyForce(separate)
     cop.edges()
   })
 }
@@ -120,23 +133,22 @@ function handleTackles() {
 
 function addCop() {
   if (frameCount % newCopDelay === 0) {
-    cops.push(new Cop(random([0, width]), random(topOfField, height)))
+    cops.push(new Boid(random([0, width]), random(topOfField, height)))
     if (cops.length === 1) {
       copWhistle.loop()
     }
   }
 }
 
-
 function keyPressed() {
   switch (keyCode) {
     case LEFT_ARROW:
       butt.velocity = createVector(-3, 0)
-      butt.direction = "left"
+      buttDirection = "left"
       break
     case RIGHT_ARROW:
       butt.velocity = createVector(3, 0)
-      butt.direction = "right"
+      buttDirection = "right"
       break
     case UP_ARROW:
       butt.velocity = createVector(0, -3)
