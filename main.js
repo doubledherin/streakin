@@ -78,7 +78,7 @@ function drawCops() {
   addCop()
   cops.forEach(cop => {
     cop.display()
-    cop.update(butt.position)
+    cop.update(butt.position, cops)
     cop.edges()
   })
 }
@@ -127,6 +127,7 @@ function addCop() {
     }
   }
 }
+
 
 function keyPressed() {
   switch (keyCode) {

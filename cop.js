@@ -8,16 +8,51 @@ function Cop(x, y) {
     this.acceleration.add(force);
   }
 
-  this.update = function(buttPosition) {
+  this.update = function(buttPosition, cops) {
     this.velocity.add(this.acceleration)
     this.position.add(this.velocity)
     this.acceleration.set(0, 0)
     var chase = this.chase(buttPosition)
     this.applyForce(chase)
+    var separate = this.separate(cops)
+    this.applyForce(separate)
   }
 
   this.display = function() {
     image(copImage, this.position.x, this.position.y)
+  }
+
+  this.separate = function(cops) {
+    let desiredseparation = 50
+    let steer = createVector(0, 0)
+    let count = 0
+    // For every boid in the system, check if it's too close
+    for (let i = 0; i < cops.length; i++) {
+      let d = p5.Vector.dist(this.position,cops[i].position)
+      // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
+      if ((d > 0) && (d < desiredseparation)) {
+        // Calculate vector pointing away from neighbor
+        let diff = p5.Vector.sub(this.position, cops[i].position)
+        diff.normalize()
+        diff.div(d)        // Weight by distance
+        steer.add(diff)
+        count++;           // Keep track of how many
+      }
+    }
+    // Average -- divide by how many
+    if (count > 0) {
+      steer.div(count);
+    }
+  
+    // As long as the vector is greater than 0
+    if (steer.mag() > 0) {
+      // Implement Reynolds: Steering = Desired - Velocity
+      steer.normalize();
+      steer.mult(this.maxspeed);
+      steer.sub(this.velocity);
+      steer.limit(this.maxforce);
+    }
+    return steer;
   }
 
 
