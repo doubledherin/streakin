@@ -1,12 +1,13 @@
 // constants
 const copDelayTimeInSeconds = 15
 const newCopDelay = 60 * copDelayTimeInSeconds
+const CLICK_TO_BEGIN = "CLICK_TO_BEGIN"
 const INSTRUCTIONS = "INSTRUCTIONS"
 const PLAYING = "PLAYING"
 const GAME_OVER = "GAME_OVER"
 
 // initial state
-let state = INSTRUCTIONS
+let state = CLICK_TO_BEGIN
 let score = 0
 let cops = []
 let buttStartPosition
@@ -26,13 +27,19 @@ function setup() {
   topOfField = windowHeight/6
 }
 function mousePressed() {
-  console.log("MOUSE PRESSED")
+  console.log("PRESSED")
   userStartAudio()
+  if (state === CLICK_TO_BEGIN) {
+    state = INSTRUCTIONS
+  }
 }
 
 function draw() {
   handleSounds()
   switch (state) {
+    case CLICK_TO_BEGIN:
+      showClickInstructions()
+      break
     case INSTRUCTIONS:
       showInstructions()
       break
@@ -191,6 +198,12 @@ function showInstructions() {
   rect(0, 0, width, height)
   instructionsText()
 }
+
+function showClickInstructions() {
+  fill(250, 243, 220)
+  rect(0, 0, width, height)
+  clickInstructionsText()
+}
 function showGameOver() {
   fill(250, 243, 220)
   rect(0, 0, width, height)
@@ -243,6 +256,16 @@ function instructionsText() {
   pop()
 }
 
+function clickInstructionsText() {
+  push()
+  textFont("VT323")
+  stroke(0)
+  fill(0)
+  textSize(45)
+  textAlign(CENTER, CENTER)
+  text("CLICK THE SCREEN!", 0, height/4, width)
+  pop()
+}
 function streakinText() {
   push()
   textFont("Monoton")
