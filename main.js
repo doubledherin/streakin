@@ -224,7 +224,7 @@ function gameOverText() {
   textSize(45)
   textAlign(CENTER, CENTER)
   text("Ouch!", 0, height/4, width)
-  text("Creamed by the fuzz!", 0, height/4 + 200, width)
+  text("Creamed by the fuzz!", 0, height/4 + 100, width)
   text(`Score: ${score}`, 0, height/4 + 300, width)
   
   var highScore = getItem('streakinHighScore')
