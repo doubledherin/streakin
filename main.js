@@ -239,7 +239,7 @@ function gameOverText() {
   text("Creamed by the fuzz!", 0, height/4 + 100, width)
   text(`Score: ${score}`, 0, height/4 + 300, width)
   
-  var highScore = getItem('streakinHighScore')
+  const highScore = getItem('streakinHighScore')
   if (score >= highScore) {
     text(`You got the highest score!`, 0, height/4 + 400, width)
     if (score > highScore) {

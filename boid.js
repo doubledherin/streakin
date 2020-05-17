@@ -84,21 +84,21 @@ class Boid {
   }
 
   gravitateTowardCenter() {
-    var desired = p5.Vector.sub(this.center, this.position)
+    let desired = p5.Vector.sub(this.center, this.position)
     desired.setMag(1.5)
-    var steer = p5.Vector.sub(desired, this.velocity)
+    let steer = p5.Vector.sub(desired, this.velocity)
     steer.limit(this.maxForce)
     return steer
   }
 
   flee(target) {
-    var desired = p5.Vector.sub(target, this.position)
-    var d = desired.mag()
+    let desired = p5.Vector.sub(target, this.position)
+    let d = desired.mag()
     if (d < 300) {
       this.isFleeing = true
       desired.setMag(this.maxSpeed)
       desired.mult(-1)
-      var steer = p5.Vector.sub(desired, this.velocity)
+      let steer = p5.Vector.sub(desired, this.velocity)
       steer.limit(this.maxForce)
       return steer
     } else {
